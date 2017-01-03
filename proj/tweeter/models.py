@@ -11,3 +11,11 @@ class Tweet(models.Model):
 
     def __str__(self):
         return self.content
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User)
+    bio = models.TextField()
+
+    def __str__(self):
+        return "Profile for {user}".format(user=self.user)
