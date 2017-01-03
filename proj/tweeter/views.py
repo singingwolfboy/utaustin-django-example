@@ -58,5 +58,6 @@ def new_tweet(request):
         tweet = tweet_form.save(commit=False)
         tweet.creator = request.user
         tweet.save()
-    return HttpResponseRedirect("/")
+    next_url = request.GET.get("next") or "/"
+    return HttpResponseRedirect(next_url)
 
