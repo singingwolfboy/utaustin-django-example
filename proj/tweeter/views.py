@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.http import Http404, HttpResponseRedirect
 from django.contrib.auth.models import User
+from django.contrib import messages
 from tweeter.models import Tweet, Profile
 from tweeter.forms import TweetForm, UserProfileForm
 
@@ -31,6 +32,11 @@ def view_user(request, username):
             profile_form = UserProfileForm(request.POST, instance=user.profile)
             if profile_form.is_valid():
                 profile_form.save()
+                messages.add_message(
+                    request,
+                    messages.SUCCESS,
+                    'Your profile has been updated.',
+                )
         else:
             profile_form = UserProfileForm(instance=user.profile)
         tweet_form = TweetForm()
@@ -58,6 +64,11 @@ def new_tweet(request):
         tweet = tweet_form.save(commit=False)
         tweet.creator = request.user
         tweet.save()
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Your tweet has been posted!',
+        )
     next_url = request.GET.get("next") or "/"
     return HttpResponseRedirect(next_url)
 
