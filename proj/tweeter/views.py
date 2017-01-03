@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.views import View
 from django.urls import reverse
+from django.views.generic import ListView
 from tweeter.models import Tweet, Profile
 from tweeter.forms import TweetForm, UserProfileForm
 
@@ -84,4 +85,8 @@ def new_tweet(request):
         )
     next_url = request.GET.get("next") or "/"
     return HttpResponseRedirect(next_url)
+
+
+class TweetListView(ListView):
+    queryset = Tweet.objects.order_by('-created_at')
 

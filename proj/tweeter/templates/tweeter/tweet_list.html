@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Tweets{% endblock %}
+
+{% block content %}
+  <p>Tweets:</p>
+  <ol>
+  {% for tweet in object_list %}
+    <li>
+      {{ tweet.content }} <br>
+      <a href="{% url 'user_profile' username=tweet.creator.username %}">@{{ tweet.creator.username }}</a>
+      </li>
+  {% endfor %}
+  </ol>
+{% endblock %}
