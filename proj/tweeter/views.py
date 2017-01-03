@@ -110,4 +110,9 @@ def search(request):
 
 
 def search_results(request, query):
-    pass
+    results = Tweet.objects.filter(content__icontains=query).all()
+    context = {
+        "query": query,
+        "search_results": results,
+    }
+    return render(request, "search_results.html", context)

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+  <h1>Search Results: {{ query }}</h1>
+  <ul>
+  {% for tweet in search_results %}
+    <li>
+      {{ tweet.content }} <br>
+      <a href="{% url 'user_profile' username=tweet.creator.username %}">@{{ tweet.creator.username }}</a>
+      </li>
+  {% endfor %}
+  </ul>
+{% endblock %}
