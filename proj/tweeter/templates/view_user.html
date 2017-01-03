@@ -3,4 +3,20 @@
 {% block content %}
 <h1>Viewing {{ viewed_user.username }}</h1>
 <p>{{ viewed_user.profile.bio }}</p>
+
+<form action="{% url 'view_user' username=viewed_user.username %}" method="POST">
+  {% csrf_token %}
+  {{ form }}
+  <input type="submit" value="Update Profile" />
+</form>
+
+<p>Recent tweets:</p>
+  <ol>
+  {% for tweet in tweets %}
+    <li>
+      {{ tweet.content }} <br>
+      <a href="{% url 'view_user' username=tweet.creator.username %}">@{{ tweet.creator.username }}</a>
+      </li>
+  {% endfor %}
+  </ol>
 {% endblock %}

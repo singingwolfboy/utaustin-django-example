@@ -5,7 +5,9 @@
 {% block content %}
   <h1>Welcome to Tweeter!</h1>
   {% if user.is_authenticated %}
-    <p>Welcome, {{ user.username }}. Thanks for logging in.</p>
+    <p>Welcome, {{ user.username }}. Thanks for logging in.
+      <a href="{% url 'view_user' username=user.username %}">View Profile</a>
+    </p>
     <p><a href="{% url 'logout' %}">Log out</a></p>
   {% else %}
     <p>Welcome, new user.
@@ -22,7 +24,10 @@
   <p>Recent tweets:</p>
   <ol>
   {% for tweet in recent_tweets %}
-    <li>{{ tweet.content }}</li>
+    <li>
+      {{ tweet.content }} <br>
+      <a href="{% url 'view_user' username=tweet.creator.username %}">@{{ tweet.creator.username }}</a>
+      </li>
   {% endfor %}
   </ol>
 
