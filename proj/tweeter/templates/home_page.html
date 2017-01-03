@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Tweeter{% endblock %}
+
+{% block content %}
+  <h1>Welcome to Tweeter!</h1>
+  {% if user.is_authenticated %}
+    <p>Welcome, {{ user.username }}. Thanks for logging in.</p>
+    <a href="{% url 'logout' %}">Log out</a>
+  {% else %}
+    <p>Welcome, new user.
+      <a href="{% url 'login' %}">Please log in.</a>
+    </p>
+  {% endif %}
+
+  <p>Recent tweets:</p>
+  <ol>
+  {% for tweet in recent_tweets %}
+    <li>{{ tweet.content }}</li>
+  {% endfor %}
+  </ol>
+
+{% endblock %}
