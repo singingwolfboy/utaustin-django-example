@@ -5,7 +5,7 @@
 <p>{{ viewed_user.profile.bio }}</p>
 
 {% if profile_form %}
-  <form action="{% url 'view_user' username=viewed_user.username %}" method="POST">
+  <form action="{% url 'user_profile' username=viewed_user.username %}" method="POST">
     {% csrf_token %}
     {{ profile_form }}
     <input type="submit" value="Update Profile" />
@@ -25,7 +25,7 @@
   {% for tweet in tweets %}
     <li>
       {{ tweet.content }} <br>
-      <a href="{% url 'view_user' username=tweet.creator.username %}">@{{ tweet.creator.username }}</a>
+      <a href="{% url 'user_profile' username=tweet.creator.username %}">@{{ tweet.creator.username }}</a>
       </li>
   {% endfor %}
   </ol>
