@@ -4,11 +4,21 @@
 <h1>Viewing {{ viewed_user.username }}</h1>
 <p>{{ viewed_user.profile.bio }}</p>
 
-<form action="{% url 'view_user' username=viewed_user.username %}" method="POST">
-  {% csrf_token %}
-  {{ form }}
-  <input type="submit" value="Update Profile" />
-</form>
+{% if profile_form %}
+  <form action="{% url 'view_user' username=viewed_user.username %}" method="POST">
+    {% csrf_token %}
+    {{ profile_form }}
+    <input type="submit" value="Update Profile" />
+  </form>
+{% endif %}
+
+{% if tweet_form %}
+  <form action="{% url 'new_tweet' %}" method="POST">
+    {% csrf_token %}
+    {{ tweet_form }}
+    <input type="submit" value="Tweet!" />
+  </form>
+{% endif %}
 
 <p>Recent tweets:</p>
   <ol>

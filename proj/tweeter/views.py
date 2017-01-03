@@ -13,10 +13,11 @@ def home_page(request):
     if request.method == 'POST':
         form = TweetForm(request.POST)
         if form.is_valid():
-            tweet_text = form.cleaned_data["tweet"]
-            tweet = Tweet(content=tweet_text, creator=request.user)
+            # tweet_text = form.cleaned_data["tweet"]
+            # tweet = Tweet(content=tweet_text, creator=request.user)
+            tweet = form.save(commit=False)
+            tweet.creator = request.user
             tweet.save()
-            return HttpResponseRedirect("/")
     else:
         form = TweetForm()
     recent_tweets = Tweet.objects.order_by('-created_at').all()[:5]
@@ -36,11 +37,15 @@ def view_user(request, username):
 
     if user == request.user:
         if request.method == 'POST':
-            form = UserProfileForm(request.POST)
+            profile_form = UserProfileForm(request.POST, instance=user.profile)
+            if profile_form.is_valid():
+                profile_form.save()
         else:
-            form = UserProfileForm()
+            profile_form = UserProfileForm(instance=user.profile)
+        tweet_form = TweetForm()
     else:
-        form = None
+        profile_form = None
+        tweet_form = None
 
     user_tweets = (
         Tweet.objects.filter(creator=user)
@@ -49,7 +54,18 @@ def view_user(request, username):
     context = {
         "viewed_user": user,
         "tweets": user_tweets,
-        "form": form,
+        "profile_form": profile_form,
+        "tweet_form": tweet_form,
     }
     return render(request, "view_user.html", context)
+
+
+@require_http_methods(["POST"])
+def new_tweet(request):
+    tweet_form = TweetForm(request.POST)
+    if tweet_form.is_valid():
+        tweet = tweet_form.save(commit=False)
+        tweet.creator = request.user
+        tweet.save()
+    return HttpResponseRedirect("/")
 
