@@ -8,18 +8,9 @@ from tweeter.models import Tweet, Profile
 from tweeter.forms import TweetForm, UserProfileForm
 
 
-@require_http_methods(["GET", "POST"])
+@require_http_methods(["GET"])
 def home_page(request):
-    if request.method == 'POST':
-        form = TweetForm(request.POST)
-        if form.is_valid():
-            # tweet_text = form.cleaned_data["tweet"]
-            # tweet = Tweet(content=tweet_text, creator=request.user)
-            tweet = form.save(commit=False)
-            tweet.creator = request.user
-            tweet.save()
-    else:
-        form = TweetForm()
+    form = TweetForm()
     recent_tweets = Tweet.objects.order_by('-created_at').all()[:5]
     context = {
         "recent_tweets": recent_tweets,
