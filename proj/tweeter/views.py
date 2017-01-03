@@ -9,7 +9,7 @@ from django.views import View
 from django.urls import reverse
 from django.views.generic import ListView
 from tweeter.models import Tweet, Profile
-from tweeter.forms import TweetForm, UserProfileForm
+from tweeter.forms import TweetForm, UserProfileForm, SearchForm
 
 
 @require_http_methods(["GET"])
@@ -68,7 +68,9 @@ class UserProfileView(View):
                 'Your profile has been updated.',
             )
 
-        return HttpResponseRedirect(reverse('user_profile'))
+        return HttpResponseRedirect(
+            reverse('user_profile', kwargs={"username": user.username})
+        )
 
 
 @require_http_methods(["POST"])
@@ -90,3 +92,22 @@ def new_tweet(request):
 class TweetListView(ListView):
     queryset = Tweet.objects.order_by('-created_at')
 
+
+@require_http_methods(["GET", "POST"])
+def search(request):
+    if request.method == "POST":
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            query = form.cleaned_data["query"]
+            url = reverse("search_results", kwargs={"query": query})
+            return HttpResponseRedirect(url)
+    else:
+        form = SearchForm()
+    context = {
+        "form": form,
+    }
+    return render(request, "search_form.html", context)
+
+
+def search_results(request, query):
+    pass
