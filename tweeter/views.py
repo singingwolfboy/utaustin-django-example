@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import time
 from functools import wraps
 
 from django.shortcuts import render
@@ -16,6 +17,7 @@ from django.urls import reverse
 from django.views.generic import ListView
 from django.utils.decorators import method_decorator
 from django.core.mail import send_mail
+from django.core.cache import cache
 from django.views.decorators.cache import cache_page
 from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import api_view
@@ -26,8 +28,13 @@ from tweeter.forms import (
 from tweeter.serializers import TweetSerializer
 
 
+def expensive_function():
+    time.sleep(5)
+    return 5
+
+
 @require_http_methods(["GET", "POST"])
-@cache_page(60)
+#@cache_page(60)
 def home_page(request):
     form = TweetForm()
     recent_tweets = Tweet.objects.order_by('-created_at').all()[:5]
@@ -56,11 +63,17 @@ def home_page(request):
     else:
         reg_form = UserRegistrationForm()
 
+    expensive_value = cache.get("expensive-key")
+    if not expensive_value:
+        expensive_value = expensive_function()
+        cache.set("expensive-key", expensive_value, 60)
+
     context = {
         "recent_tweets": recent_tweets,
         "form": form,
         "is_first_time": is_first_time,
         "registration_form": reg_form,
+
     }
     return render(request, "home_page.html", context)
 
