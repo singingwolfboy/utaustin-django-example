@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.http import Http404, HttpResponseRedirect, HttpResponseBadRequest
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views import View
 from django.urls import reverse
@@ -80,6 +81,7 @@ class UserProfileView(View):
 
 
 @require_http_methods(["POST"])
+@login_required
 def new_tweet(request):
     tweet_form = TweetForm(request.POST)
     if tweet_form.is_valid():
@@ -91,6 +93,8 @@ def new_tweet(request):
             messages.SUCCESS,
             'Your tweet has been posted!',
         )
+    else:
+        return HttpResponseBadRequest()
     next_url = request.GET.get("next") or "/"
     return HttpResponseRedirect(next_url)
 
