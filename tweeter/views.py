@@ -16,6 +16,7 @@ from django.urls import reverse
 from django.views.generic import ListView
 from django.utils.decorators import method_decorator
 from rest_framework.renderers import JSONRenderer
+from rest_framework.decorators import api_view
 from tweeter.models import Tweet, Profile
 from tweeter.forms import TweetForm, UserProfileForm, SearchForm
 from tweeter.serializers import TweetSerializer
@@ -116,10 +117,18 @@ def tweet_json(request, tweet_id):
     return JsonResponse(serializer.data)
 
 
+@api_view(["GET", "POST"])
 def tweet_list_json(request):
-    tweets = Tweet.objects.all()
-    serializer = TweetSerializer(tweets, many=True)
-    return JsonResponse(serializer.data, safe=False)
+    if request.method == "GET":
+        tweets = Tweet.objects.all()
+        serializer = TweetSerializer(tweets, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    else:
+        serializer = TweetSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
 
 
 class TweetListView(ListView):
