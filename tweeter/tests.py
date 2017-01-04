@@ -1,17 +1,6 @@
-from django.test import Client
-from django.contrib.auth.models import User
 import pytest
 
 pytestmark = pytest.mark.django_db
-
-
-@pytest.fixture
-def user_client(client):
-    jane = User(username="jane")
-    jane.set_password("testing")
-    jane.save()
-    client.login(username="jane", password="testing")
-    return client
 
 
 def test_home_page(client):
