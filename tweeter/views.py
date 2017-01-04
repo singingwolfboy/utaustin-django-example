@@ -113,8 +113,13 @@ def tweet_json(request, tweet_id):
     except Tweet.DoesNotExist:
         return HttpResponseNotFound()
     serializer = TweetSerializer(tweet)
-    # output = JSONRenderer().render(serializer.data)
     return JsonResponse(serializer.data)
+
+
+def tweet_list_json(request):
+    tweets = Tweet.objects.all()
+    serializer = TweetSerializer(tweets, many=True)
+    return JsonResponse(serializer.data, safe=False)
 
 
 class TweetListView(ListView):
