@@ -4,7 +4,10 @@ from functools import wraps
 
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
-from django.http import Http404, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import (
+    Http404, HttpResponseRedirect, HttpResponseBadRequest,
+    HttpResponseNotFound, JsonResponse
+)
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -12,8 +15,10 @@ from django.views import View
 from django.urls import reverse
 from django.views.generic import ListView
 from django.utils.decorators import method_decorator
+from rest_framework.renderers import JSONRenderer
 from tweeter.models import Tweet, Profile
 from tweeter.forms import TweetForm, UserProfileForm, SearchForm
+from tweeter.serializers import TweetSerializer
 
 
 @require_http_methods(["GET"])
@@ -100,6 +105,16 @@ def new_tweet(request):
         return HttpResponseBadRequest()
     next_url = request.GET.get("next") or "/"
     return HttpResponseRedirect(next_url)
+
+
+def tweet_json(request, tweet_id):
+    try:
+        tweet = Tweet.objects.get(id=tweet_id)
+    except Tweet.DoesNotExist:
+        return HttpResponseNotFound()
+    serializer = TweetSerializer(tweet)
+    # output = JSONRenderer().render(serializer.data)
+    return JsonResponse(serializer.data)
 
 
 class TweetListView(ListView):
