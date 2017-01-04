@@ -1,5 +1,7 @@
 from __future__ import print_function
 
+from functools import wraps
+
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.http import Http404, HttpResponseRedirect, HttpResponseBadRequest
@@ -8,6 +10,7 @@ from django.contrib import messages
 from django.views import View
 from django.urls import reverse
 from django.views.generic import ListView
+from django.utils.decorators import method_decorator
 from tweeter.models import Tweet, Profile
 from tweeter.forms import TweetForm, UserProfileForm, SearchForm
 
@@ -23,18 +26,20 @@ def home_page(request):
     return render(request, "home_page.html", context)
 
 
-class UserProfileView(View):
-
-    def get_user(self, username):
+def require_user(func):
+    @wraps(func)
+    def lookup_user(request, username):
         try:
             user = User.objects.filter(username=username).get()
         except User.DoesNotExist:
             raise Http404("User {username} not found".format(username=username))
-        return user
+        return func(request, user)
+    return lookup_user
 
-    def get(self, request, username):
-        user = self.get_user(username)
 
+@method_decorator(require_user, name='dispatch')
+class UserProfileView(View):
+    def get(self, request, user):
         if user == request.user:
             profile_form = UserProfileForm(instance=user.profile)
             tweet_form = TweetForm()
@@ -54,8 +59,7 @@ class UserProfileView(View):
         }
         return render(request, "user_profile.html", context)
 
-    def post(self, request, username):
-        user = self.get_user(username)
+    def post(self, request, user):
         if user != request.user:
             return HttpResponseBadRequest("You can't modify another user's profile.")
 
