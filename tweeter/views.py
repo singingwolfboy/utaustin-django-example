@@ -126,11 +126,20 @@ def search_results(request, query):
         User.objects.filter(username=uname).first()
         for uname in usernames
     ]
-    substrings = [word for word in words if not word.startswith("user:")]
-    regex = "|".join(substrings)
-    results = Tweet.objects.filter(content__iregex=regex).all()
+    if not all(users):
+        search_error = "One or more of the users in your query doesn't exist."
+        results = []
+    else:
+        substrings = [word for word in words if not word.startswith("user:")]
+        regex = "|".join(substrings)
+        results = Tweet.objects.filter(content__iregex=regex)
+        if users:
+            results = results.filter(creator__in=users)
+        results = results.all()
+        search_error = None
     context = {
         "query": query,
         "search_results": results,
+        "search_error": search_error,
     }
     return render(request, "search_results.html", context)
