@@ -16,6 +16,7 @@ from django.urls import reverse
 from django.views.generic import ListView
 from django.utils.decorators import method_decorator
 from django.core.mail import send_mail
+from django.views.decorators.cache import cache_page
 from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import api_view
 from tweeter.models import Tweet, Profile
@@ -26,6 +27,7 @@ from tweeter.serializers import TweetSerializer
 
 
 @require_http_methods(["GET", "POST"])
+@cache_page(60)
 def home_page(request):
     form = TweetForm()
     recent_tweets = Tweet.objects.order_by('-created_at').all()[:5]

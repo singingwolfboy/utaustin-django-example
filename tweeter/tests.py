@@ -1,6 +1,7 @@
 import pytest
 from django.contrib.auth.models import User
 from tweeter.models import Tweet
+from django.core.cache import cache
 
 pytestmark = pytest.mark.django_db
 
@@ -40,7 +41,7 @@ def test_good_tweet(user_client):
 
 
 def test_empty_search(client):
-    response = client.get("/search/")
+    response = client.get("/search")
     assert response.status_code == 200
     assert "<input" in response.content
     assert "Search" in response.content
@@ -95,7 +96,22 @@ def test_search_bad_user(client):
     assert "No search results. Sorry!" not in response.content
 
 
-
-
-
+def test_cached_home_page(client):
+    response1 = client.get("/")
+    assert response1.status_code == 200
+    # insert a tweet into the database
+    user = User(username="bob_ross")
+    user.save()
+    tweet = Tweet(content="happy little trees", creator=user)
+    tweet.save()
+    # check the homepage again -- it should *not* be updated,
+    # due to the cache
+    response2 = client.get("/")
+    assert response2.status_code == 200
+    assert "happy little trees" not in response2.content
+    # flush the cache, and the tweet should appear!
+    cache.clear()
+    response3 = client.get("/")
+    assert response3.status_code == 200
+    assert "happy little trees" in response3.content
 
