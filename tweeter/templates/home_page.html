@@ -13,6 +13,14 @@
     <p>Welcome, new user.
       <a href="{% url 'login' %}">Please log in.</a>
     </p>
+
+    <h2>Register!</h2>
+    <form action="" method="POST">
+      {% csrf_token %}
+      {{ registration_form }}
+      <input type="submit" value="Register" />
+    </form>
+
   {% endif %}
 
   {% if is_first_time %}

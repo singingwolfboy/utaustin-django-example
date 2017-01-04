@@ -18,20 +18,31 @@ from django.utils.decorators import method_decorator
 from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import api_view
 from tweeter.models import Tweet, Profile
-from tweeter.forms import TweetForm, UserProfileForm, SearchForm
+from tweeter.forms import (
+    TweetForm, UserProfileForm, SearchForm, UserRegistrationForm
+)
 from tweeter.serializers import TweetSerializer
 
 
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "POST"])
 def home_page(request):
     form = TweetForm()
     recent_tweets = Tweet.objects.order_by('-created_at').all()[:5]
     is_first_time = not request.session.get("seen_before", False)
     request.session["seen_before"] = True
+
+    if request.method == "POST":
+        reg_form = UserRegistrationForm(request.POST)
+        if reg_form.is_valid():
+            pass  # we'll handle this in a bit
+    else:
+        reg_form = UserRegistrationForm()
+
     context = {
         "recent_tweets": recent_tweets,
         "form": form,
         "is_first_time": is_first_time,
+        "registration_form": reg_form,
     }
     return render(request, "home_page.html", context)
 
