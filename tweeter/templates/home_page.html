@@ -15,6 +15,10 @@
     </p>
   {% endif %}
 
+  {% if is_first_time %}
+    <p>This is your first time viewing this website! Welcome!</p>
+  {% endif %}
+
   <form action="{% url 'new_tweet' %}?next={{ request.path }}" method="POST">
     {% csrf_token %}
     {{ form }}

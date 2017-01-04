@@ -20,9 +20,12 @@ from tweeter.forms import TweetForm, UserProfileForm, SearchForm
 def home_page(request):
     form = TweetForm()
     recent_tweets = Tweet.objects.order_by('-created_at').all()[:5]
+    is_first_time = not request.session.get("seen_before", False)
+    request.session["seen_before"] = True
     context = {
         "recent_tweets": recent_tweets,
         "form": form,
+        "is_first_time": is_first_time,
     }
     return render(request, "home_page.html", context)
 
