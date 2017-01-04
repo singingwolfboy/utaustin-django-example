@@ -85,6 +85,16 @@ def test_search_by_user(client):
     assert "I am the Lorax" not in response.content
 
 
+def test_search_bad_user(client):
+    response = client.get('/search/user:nonexistant foo')
+    assert response.status_code == 200
+    assert (
+        "One or more of the users in your query does not exist."
+        in response.content
+    )
+    assert "No search results. Sorry!" not in response.content
+
+
 
 
 

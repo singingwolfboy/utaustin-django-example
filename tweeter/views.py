@@ -127,7 +127,7 @@ def search_results(request, query):
         for uname in usernames
     ]
     if not all(users):
-        search_error = "One or more of the users in your query doesn't exist."
+        search_error = "One or more of the users in your query does not exist."
         results = []
     else:
         substrings = [word for word in words if not word.startswith("user:")]
