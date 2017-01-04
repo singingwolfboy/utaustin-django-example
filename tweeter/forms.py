@@ -6,6 +6,7 @@ from tweeter.models import Tweet, Profile
 
 class UserRegistrationForm(forms.Form):
     username = forms.CharField()
+    email = forms.CharField(widget=widgets.EmailInput)
     password = forms.CharField(widget=widgets.PasswordInput)
     repeated_password = forms.CharField(widget=widgets.PasswordInput)
 
@@ -21,6 +22,7 @@ class UserRegistrationForm(forms.Form):
     #     password = self.cleaned_data['password']
     #     if password == "password":
     #         raise forms.ValidationError("Use something stronger")
+    #     return password
 
     def clean(self):
         cleaned_data = super(UserRegistrationForm, self).clean()
@@ -28,6 +30,7 @@ class UserRegistrationForm(forms.Form):
         repeated_password = cleaned_data['repeated_password']
         if password != repeated_password:
             raise forms.ValidationError("Passwords do not match")
+        return cleaned_data
 
 
 class TweetForm(forms.ModelForm):

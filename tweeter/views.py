@@ -15,6 +15,7 @@ from django.views import View
 from django.urls import reverse
 from django.views.generic import ListView
 from django.utils.decorators import method_decorator
+from django.core.mail import send_mail
 from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import api_view
 from tweeter.models import Tweet, Profile
@@ -43,6 +44,12 @@ def home_page(request):
                 request,
                 messages.SUCCESS,
                 'User created. You may now log in.',
+            )
+            send_mail(
+                "You've registered!",
+                "Congratulations for making an account on Tweeter!",
+                "webmaster@tweeter.com",
+                [reg_form.cleaned_data["email"]],
             )
     else:
         reg_form = UserRegistrationForm()
