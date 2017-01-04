@@ -120,7 +120,15 @@ def search(request):
 
 
 def search_results(request, query):
-    results = Tweet.objects.filter(content__icontains=query).all()
+    words = query.split(" ")
+    usernames = [word[5:] for word in words if word.startswith("user:")]
+    users = [
+        User.objects.filter(username=uname).first()
+        for uname in usernames
+    ]
+    substrings = [word for word in words if not word.startswith("user:")]
+    regex = "|".join(substrings)
+    results = Tweet.objects.filter(content__iregex=regex).all()
     context = {
         "query": query,
         "search_results": results,

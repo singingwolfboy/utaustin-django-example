@@ -9,7 +9,9 @@
     <li>
       {{ tweet.content }} <br>
       <a href="{% url 'user_profile' username=tweet.creator.username %}">@{{ tweet.creator.username }}</a>
-      </li>
+    </li>
+  {% empty %}
+    <li>No search results. Sorry!</li>
   {% endfor %}
   </ul>
 {% endblock %}
