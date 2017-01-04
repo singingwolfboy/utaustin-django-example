@@ -34,7 +34,16 @@ def home_page(request):
     if request.method == "POST":
         reg_form = UserRegistrationForm(request.POST)
         if reg_form.is_valid():
-            pass  # we'll handle this in a bit
+            user = User(
+                username=reg_form.cleaned_data["username"],
+            )
+            user.set_password(reg_form.cleaned_data["password"])
+            user.save()
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'User created. You may now log in.',
+            )
     else:
         reg_form = UserRegistrationForm()
 
