@@ -32,7 +32,9 @@ def require_user(func):
         try:
             user = User.objects.filter(username=username).get()
         except User.DoesNotExist:
-            raise Http404("User {username} not found".format(username=username))
+            raise Http404(
+                "User {username} not found".format(username=username)
+            )
         return func(request, user)
     return lookup_user
 
